@@ -10,7 +10,11 @@ fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-mkcert -install
+if [ -f "$CAROOT/rootCA.pem" ] && [ -f "$CAROOT/rootCA-key.pem" ]; then
+  echo "mkcert CA already installed, skipping."
+else
+  mkcert -install
+fi
 
 mkdir -p certs
 mkcert -cert-file certs/keel.localhost.pem -key-file certs/keel.localhost-key.pem keel.localhost
