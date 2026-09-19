@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<head><title>Dev server not running</title></head>
+<body style="font-family: system-ui, sans-serif; text-align: center; margin-top: 15%; color: #333;">
+<h1>Dev server not running</h1>
+<p>Caddy couldn't reach anything on port {{env "UPSTREAM_PORT"}}.</p>
+<p>Is your dev server running?</p>
+<p>Start it with:</p>
+<pre style="display: inline-block; text-align: left; background: #f4f4f4; padding: 0.75em 1em; border-radius: 6px;">cd apps/ui && nub run dev</pre>
+</body>
+</html>

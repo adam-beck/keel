@@ -1,0 +1,58 @@
+# Use postgres/example user/password credentials
+
+services:
+
+  db:
+    image: postgres:19beta3-alpine
+    restart: always
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_USER: keel_admin
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: keel
+    ports:
+      - 5432:5432
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    environment:
+      UPSTREAM_PORT: ${UPSTREAM_PORT:-5173}
+    ports:
+      - 443:443
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/data/certs:ro
+      - ./caddy:/etc/caddy/errors:ro
+
+  backend:
+    build:
+      context: ./apps/backend
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      # docker compose watch's own sync (inotify-based) can silently stop
+      # picking up changes after a while, so bind-mount src directly and
+      # have tsx's internal watcher poll it instead of trusting fs events.
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "300"
+    depends_on:
+      - db
+    volumes:
+      - ./apps/backend/src:/app/src
+    develop:
+      watch:
+        - action: rebuild
+          path: ./apps/backend/package.json
+        - action: rebuild
+          path: ./apps/backend/pnpm-lock.yaml

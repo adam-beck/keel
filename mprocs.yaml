@@ -1,0 +1,17 @@
+procs:
+  docker:
+    shell: docker compose up
+  ui:
+    shell: nub run dev
+    cwd: apps/ui
+  tunnel:
+    # Public HTTPS URL (via a Cloudflare quick tunnel) for reaching the full
+    # Caddy-fronted stack from your phone or other devices. The URL is
+    # printed in this pane's logs and changes every time this proc restarts.
+    # Off by default (exposes the dev server publicly)
+    autostart: false
+    shell: >
+      $HOME/.local/bin/cloudflared tunnel --url https://localhost:443
+      --http-host-header keel.localhost
+      --origin-server-name keel.localhost
+      --origin-ca-pool $HOME/.local/share/mkcert/rootCA.pem
