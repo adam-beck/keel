@@ -3,12 +3,8 @@ import { Hono } from 'hono'
 
 const app = new Hono()
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
-
-app.get('/api/test', (c) => {
-  return c.json({ message: 'Okay. This is cool!' })
+app.get('/api/message', (c) => {
+  return c.json({ message: 'This is a sample message' })
 })
 
 serve({
