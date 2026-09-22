@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 # Customizes a fresh clone of this template: renames the dev hostname,
-# database, and DB user from "keel" to the given project name.
+# database, and DB user from "keel" to the given project name, and
+# generates a local Postgres password if one doesn't exist yet.
 #
 #   ./scripts/init-template.sh my-app
 #
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+mkdir -p secrets
+if [ ! -f secrets/postgres_password.txt ]; then
+  password=$(openssl rand -hex 24 2>/dev/null || head -c32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c32)
+  printf '%s\n' "$password" > secrets/postgres_password.txt
+  echo "Generated secrets/postgres_password.txt"
+fi
 
 name="${1:-}"
 if [ -z "$name" ]; then

@@ -10,7 +10,8 @@ fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-if [ -f "$CAROOT/rootCA.pem" ] && [ -f "$CAROOT/rootCA-key.pem" ]; then
+caroot="$(mkcert -CAROOT)"
+if [ -f "$caroot/rootCA.pem" ] && [ -f "$caroot/rootCA-key.pem" ]; then
   echo "mkcert CA already installed, skipping."
 else
   mkcert -install
