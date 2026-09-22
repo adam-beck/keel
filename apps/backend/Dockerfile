@@ -1,14 +1,12 @@
-FROM node:26-alpine
+FROM ghcr.io/nubjs/nub:0.9.3
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+COPY --chown=node:node package.json nub.lock ./
+RUN nub ci
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
-
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 3000
+CMD ["nub", "run", "dev"]
 
-CMD ["pnpm", "dev"]
