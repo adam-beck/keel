@@ -5,7 +5,7 @@
 Clone it with [giget](https://github.com/unjs/giget), then rename the project (hostname, database, and DB user) with `scripts/init-template.sh`:
 
 ```sh
-npx giget gh:OWNER/keel my-app
+npx giget gh:adam-beck/keel my-app
 cd my-app
 ./scripts/init-template.sh my-app
 ./scripts/setup-certs.sh
