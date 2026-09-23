@@ -1,3 +1,8 @@
+keymap_procs:
+  <C-c>: { c: quit }
+keymap_term:
+  <C-c>: { c: quit }
+
 procs:
   docker:
     shell: docker compose up

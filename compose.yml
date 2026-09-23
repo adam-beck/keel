@@ -46,6 +46,13 @@ services:
       # triggering inotify inside the container.
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "300"
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: keel_admin
+      PGDATABASE: keel
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
     depends_on:
       - db
     develop:
