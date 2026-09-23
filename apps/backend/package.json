@@ -5,6 +5,9 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "lint": "oxlint",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
@@ -17,6 +20,9 @@
   "devDependencies": {
     "@types/node": "^26.1.1",
     "drizzle-kit": "^0.31.11",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "oxlint-tsgolint": "^7.0.2002",
     "tsx": "^4.23.0",
     "typescript": "^7.0.2"
   },
@@ -26,5 +32,8 @@
       "version": "^0.6.0",
       "onFail": "warn"
     }
+  },
+  "allowBuilds": {
+    "esbuild": true
   }
 }
