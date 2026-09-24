@@ -7,17 +7,56 @@ import { repoRoot } from "./repo-root.ts";
 
 const NAME_PATTERN = /^[a-z][a-z0-9-]*$/;
 
-// Files that still reference the template's original "keel" name — if none
-// of these do, the repo has already been customized and there's nothing
-// left to rename.
-const GUARD_FILES = [
-  "README.md",
-  "compose.yml",
-  "Caddyfile",
-  "mprocs.yaml",
-  "apps/backend/src/db.ts",
-  "apps/backend/drizzle.config.ts",
-];
+interface Replacement {
+  file: string;
+  pattern: RegExp;
+  replacement: string;
+}
+
+// Each entry is both the guard check (is this file still templated?) and the
+// edit to apply. Keeping them paired avoids the two drifting apart — a
+// pattern that's part of the rename but missing from the guard silently
+// breaks the "already customized?" detection.
+function replacements(name: string, dbName: string, dbUser: string): Replacement[] {
+  return [
+    { file: "README.md", pattern: /^# keel$/m, replacement: `# ${name}` },
+    { file: "mprocs.yaml", pattern: /keel\.localhost/g, replacement: `${name}.localhost` },
+    { file: "Caddyfile", pattern: /keel\.localhost/g, replacement: `${name}.localhost` },
+    {
+      file: "compose.yml",
+      pattern: /POSTGRES_USER: keel_admin/,
+      replacement: `POSTGRES_USER: ${dbUser}`,
+    },
+    { file: "compose.yml", pattern: /POSTGRES_DB: keel$/m, replacement: `POSTGRES_DB: ${dbName}` },
+    {
+      file: "compose.yml",
+      pattern: /pg_isready -U keel_admin -d keel/,
+      replacement: `pg_isready -U ${dbUser} -d ${dbName}`,
+    },
+    { file: "compose.yml", pattern: /PGUSER: keel_admin/, replacement: `PGUSER: ${dbUser}` },
+    { file: "compose.yml", pattern: /PGDATABASE: keel$/m, replacement: `PGDATABASE: ${dbName}` },
+    {
+      file: "apps/backend/src/db.ts",
+      pattern: /PGUSER \?\? "keel_admin"/,
+      replacement: `PGUSER ?? "${dbUser}"`,
+    },
+    {
+      file: "apps/backend/src/db.ts",
+      pattern: /PGDATABASE \?\? "keel"/,
+      replacement: `PGDATABASE ?? "${dbName}"`,
+    },
+    {
+      file: "apps/backend/drizzle.config.ts",
+      pattern: /PGUSER \?\? "keel_admin"/,
+      replacement: `PGUSER ?? "${dbUser}"`,
+    },
+    {
+      file: "apps/backend/drizzle.config.ts",
+      pattern: /PGDATABASE \?\? "keel"/,
+      replacement: `PGDATABASE ?? "${dbName}"`,
+    },
+  ];
+}
 
 function readIfExists(file: string): string {
   try {
@@ -76,9 +115,12 @@ export async function runInit(nameArg: string | undefined) {
   ensurePassword();
 
   const name = await promptName(nameArg);
+  const dbName = name.replace(/-/g, "_");
+  const dbUser = `${dbName}_admin`;
+  const edits = replacements(name, dbName, dbUser);
 
-  const stillTemplated = GUARD_FILES.some((file) =>
-    readIfExists(path.join(repoRoot, file)).includes("keel"),
+  const stillTemplated = edits.some(({ file, pattern }) =>
+    pattern.test(readIfExists(path.join(repoRoot, file))),
   );
   if (!stillTemplated) {
     clack.outro(
@@ -87,45 +129,12 @@ export async function runInit(nameArg: string | undefined) {
     return;
   }
 
-  const dbName = name.replace(/-/g, "_");
-  const dbUser = `${dbName}_admin`;
-
   const spinner = clack.spinner();
   spinner.start("Renaming project files");
 
-  replaceInFile(path.join(repoRoot, "README.md"), /^# keel$/m, `# ${name}`);
-  replaceInFile(path.join(repoRoot, "mprocs.yaml"), /keel\.localhost/g, `${name}.localhost`);
-  replaceInFile(path.join(repoRoot, "Caddyfile"), /keel\.localhost/g, `${name}.localhost`);
-  replaceInFile(
-    path.join(repoRoot, "compose.yml"),
-    /POSTGRES_USER: keel_admin/,
-    `POSTGRES_USER: ${dbUser}`,
-  );
-  replaceInFile(
-    path.join(repoRoot, "compose.yml"),
-    /POSTGRES_DB: keel$/m,
-    `POSTGRES_DB: ${dbName}`,
-  );
-  replaceInFile(
-    path.join(repoRoot, "apps/backend/src/db.ts"),
-    /PGUSER \?\? "keel_admin"/,
-    `PGUSER ?? "${dbUser}"`,
-  );
-  replaceInFile(
-    path.join(repoRoot, "apps/backend/src/db.ts"),
-    /PGDATABASE \?\? "keel"/,
-    `PGDATABASE ?? "${dbName}"`,
-  );
-  replaceInFile(
-    path.join(repoRoot, "apps/backend/drizzle.config.ts"),
-    /PGUSER \?\? "keel_admin"/,
-    `PGUSER ?? "${dbUser}"`,
-  );
-  replaceInFile(
-    path.join(repoRoot, "apps/backend/drizzle.config.ts"),
-    /PGDATABASE \?\? "keel"/,
-    `PGDATABASE ?? "${dbName}"`,
-  );
+  for (const { file, pattern, replacement } of edits) {
+    replaceInFile(path.join(repoRoot, file), pattern, replacement);
+  }
 
   spinner.stop("Renamed project files");
 
