@@ -26,7 +26,7 @@
       "onFail": "warn"
     }
   },
-  "allowBuilds": {
+  "allowScripts": {
     "esbuild": true
   }
 }
