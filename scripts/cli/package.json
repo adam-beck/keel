@@ -1,0 +1,32 @@
+{
+  "name": "cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "oxlint",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.6.0",
+      "onFail": "warn"
+    }
+  },
+  "allowBuilds": {
+    "esbuild": true
+  }
+}
