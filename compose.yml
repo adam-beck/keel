@@ -5,12 +5,6 @@ services:
     restart: always
     # set shared memory limit when using docker compose
     shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_USER: keel_admin
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
@@ -19,6 +13,13 @@ services:
       - postgres_password
     ports:
       - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keel_admin -d keel"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
 
   caddy:
     image: caddy:2-alpine
@@ -54,12 +55,14 @@ services:
     secrets:
       - postgres_password
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     develop:
       watch:
         - action: sync
           path: ./apps/backend/src
           target: /app/src
+          initial_sync: true
         - action: rebuild
           path: ./apps/backend/package.json
         - action: rebuild
@@ -68,3 +71,6 @@ services:
 secrets:
   postgres_password:
     file: ./secrets/postgres_password.txt
+
+volumes:
+  postgres_data:
