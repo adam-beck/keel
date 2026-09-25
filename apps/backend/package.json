@@ -25,15 +25,5 @@
     "oxlint-tsgolint": "^7.0.2002",
     "tsx": "^4.23.0",
     "typescript": "^7.0.2"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "nub",
-      "version": "^0.6.0",
-      "onFail": "warn"
-    }
-  },
-  "allowScripts": {
-    "esbuild": true
   }
 }

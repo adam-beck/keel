@@ -37,7 +37,8 @@ services:
 
   backend:
     build:
-      context: ./apps/backend
+      context: .
+      dockerfile: apps/backend/Dockerfile
     restart: always
     ports:
       - 3000:3000
@@ -61,12 +62,12 @@ services:
       watch:
         - action: sync
           path: ./apps/backend/src
-          target: /app/src
+          target: /app/apps/backend/src
           initial_sync: true
         - action: rebuild
           path: ./apps/backend/package.json
         - action: rebuild
-          path: ./apps/backend/nub.lock
+          path: ./nub.lock
 
 secrets:
   postgres_password:

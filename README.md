@@ -7,6 +7,7 @@ Clone it with [giget](https://github.com/unjs/giget), then rename the project (h
 ```sh
 npx giget gh:adam-beck/keel my-app
 cd my-app
+nub install
 ./scripts/cli/bin/keel init my-app
 ./scripts/cli/bin/keel certs
 docker compose up
