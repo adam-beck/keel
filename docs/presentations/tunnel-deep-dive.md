@@ -20,16 +20,19 @@ process.
 
 ## How the cloudflared quick tunnel works
 
-The proc in [mprocs.yaml](../../mprocs.yaml):
+The task in [dekit.yaml](../../dekit.yaml):
 
 ```yaml
   tunnel:
     autostart: false
-    shell: >
-      $HOME/.local/bin/cloudflared tunnel --url https://localhost:443
-      --http-host-header keel.localhost
-      --origin-server-name keel.localhost
-      --origin-ca-pool $HOME/.local/share/mkcert/rootCA.pem
+    cmd:
+      - bash
+      - -c
+      - >-
+        $HOME/.local/bin/cloudflared tunnel --url https://localhost:443
+        --http-host-header keel.localhost
+        --origin-server-name keel.localhost
+        --origin-ca-pool $(mkcert -CAROOT)/rootCA.pem
 ```
 
 **Step by step:**

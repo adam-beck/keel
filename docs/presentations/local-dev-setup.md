@@ -42,11 +42,11 @@ three things running:
 2. **The UI dev server, run natively** (not in Docker) — Vite (or
    whatever your frontend tooling is) wants direct filesystem access for
    fast HMR, and Docker's filesystem layer just gets in the way of that.
-3. **[mprocs](https://github.com/pvolok/mprocs)** to tie both of those
+3. **[dekit](https://github.com/pvolok/dekit)** to tie both of those
    — plus an optional tunnel — into a single terminal pane instead of
    juggling three windows."
 
-**Show:** [compose.yml](../../compose.yml) and [mprocs.yaml](../../mprocs.yaml) side by side — just the shape, don't dive in yet.
+**Show:** [compose.yml](../../compose.yml) and [dekit.yaml](../../dekit.yaml) side by side — just the shape, don't dive in yet.
 
 ---
 
@@ -179,7 +179,7 @@ setup, instead of a shortcut that behaves differently."
 **Show:**
 
 ```bash
-cat mprocs.yaml
+cat dekit.yaml
 ```
 
 Point at the `tunnel` proc:
@@ -204,11 +204,11 @@ the tunnel proc, open the printed `*.trycloudflare.com` URL on a phone.
 
 ---
 
-## 6. Tying it together with mprocs (~1-2 min)
+## 6. Tying it together with dekit (~1-2 min)
 
 **Say:**
 
-"Last piece: mprocs. It's a terminal UI that runs several long-lived
+"Last piece: dekit. It's a terminal UI that runs several long-lived
 processes side by side, in one pane, with a shared log view and process
 list you switch between — instead of three terminal tabs you lose track
 of.
@@ -220,11 +220,11 @@ proc (the tunnel) stays off unless you ask for it."
 **Show / run live:**
 
 ```bash
-mprocs
+dekit up && dekit attach
 ```
 
 **Callout — be honest about scope:** "If this were a monorepo with a
-single top-level `dev` script that already starts everything, mprocs
+single top-level `dev` script that already starts everything, dekit
 buys you a lot less — you might just run that one script. It earns its
 keep specifically when you've got genuinely separate processes (a
 containerized backend plus a natively-run frontend, here) that don't
@@ -248,7 +248,7 @@ shape:
   setup) so containerized services still feel like local dev.
 - A **tunnel** (cloudflared, ngrok) for testing on real devices, wired
   through the same HTTPS path you use locally — not a bypass.
-- A **process runner** (mprocs, overmind, foreman) so starting 'dev'
+- A **process runner** (dekit, overmind, foreman) so starting 'dev'
   is one command, not a ritual.
 
 Pick the pieces that solve a problem you actually have. All five together
@@ -264,10 +264,11 @@ about it again."
 ./scripts/setup-certs.sh
 
 # Everyday dev
-mprocs                    # starts docker compose up + the UI dev server
-# inside mprocs, select the "tunnel" proc and press 's' to start it on demand
+dekit up                  # starts docker compose up + the UI dev server
+dekit attach              # open the TUI
+dekit start tunnel        # start the tunnel on demand
 
-# Equivalent manual commands, if not using mprocs
+# Equivalent manual commands, if not using dekit
 docker compose watch      # backend + db, with live sync
 cd apps/ui && nub run dev # UI dev server (or: npm run dev)
 ```

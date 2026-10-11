@@ -1,0 +1,23 @@
+tasks:
+  docker:
+    cmd: docker compose up
+    autostart: true
+  ui:
+    cmd: nub run dev
+    cwd: apps/ui
+    autostart: true
+  tunnel:
+    # Public HTTPS URL (via a Cloudflare quick tunnel) for reaching the full
+    # Caddy-fronted stack from your phone or other devices. The URL is
+    # printed in this task's logs and changes every time this task restarts.
+    # Off by default (exposes the dev server publicly)
+    autostart: false
+    # dekit runs cmd without a shell, so wrap in bash for $HOME and $(...)
+    cmd:
+      - bash
+      - -c
+      - >-
+        $HOME/.local/bin/cloudflared tunnel --url https://localhost:443
+        --http-host-header keel.localhost
+        --origin-server-name keel.localhost
+        --origin-ca-pool $(mkcert -CAROOT)/rootCA.pem
