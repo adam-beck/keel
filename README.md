@@ -13,7 +13,7 @@ nub install
 docker compose up
 ```
 
-`keel init` only sets the hostname, database name, and database user — everything it touches (`README.md`, `mprocs.yaml`, `Caddyfile`, `compose.yml`, `apps/backend/src/db.ts`, `apps/backend/drizzle.config.ts`) is a plain config file, so feel free to edit any of those values further by hand, including the ones it just set.
+`keel init` only sets the hostname, database name, and database user — everything it touches (`README.md`, `dekit.yaml`, `Caddyfile`, `compose.yml`, `apps/backend/src/db.ts`, `apps/backend/drizzle.config.ts`) is a plain config file, so feel free to edit any of those values further by hand, including the ones it just set.
 
 It also generates `secrets/postgres_password.txt` with a random password if one doesn't already exist (that file is gitignored, so a fresh clone never has one). Edit its contents anytime to use your own password instead.
 

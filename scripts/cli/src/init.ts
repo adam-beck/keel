@@ -20,7 +20,7 @@ interface Replacement {
 function replacements(name: string, dbName: string, dbUser: string): Replacement[] {
   return [
     { file: "README.md", pattern: /^# keel$/m, replacement: `# ${name}` },
-    { file: "mprocs.yaml", pattern: /keel\.localhost/g, replacement: `${name}.localhost` },
+    { file: "dekit.yaml", pattern: /keel\.localhost/g, replacement: `${name}.localhost` },
     { file: "Caddyfile", pattern: /keel\.localhost/g, replacement: `${name}.localhost` },
     {
       file: "compose.yml",

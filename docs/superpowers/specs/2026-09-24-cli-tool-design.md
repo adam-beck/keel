@@ -26,7 +26,7 @@ New package at `scripts/cli/` (own `package.json`, `nub`-managed like
   - Same name validation (`^[a-z][a-z0-9-]*$`).
   - Same "already customized?" guard (checks for `keel` in the same file
     set before doing anything).
-  - Same file replacements (README.md, mprocs.yaml, Caddyfile,
+  - Same file replacements (README.md, dekit.yaml, Caddyfile,
     scripts/setup-certs.sh → will become `certs.ts`'s own logic,
     compose.yml, apps/backend/src/db.ts, apps/backend/drizzle.config.ts),
     done in Node with `fs`/regex instead of `sed`.
