@@ -17,7 +17,7 @@ tasks:
       - bash
       - -c
       - >-
-        $HOME/.local/bin/cloudflared tunnel --url https://localhost:443
+        $(which cloudflared) tunnel --url https://localhost:443
         --http-host-header keel.localhost
         --origin-server-name keel.localhost
-        --origin-ca-pool $(mkcert -CAROOT)/rootCA.pem
+        --origin-ca-pool "$(mkcert -CAROOT)/rootCA.pem"
